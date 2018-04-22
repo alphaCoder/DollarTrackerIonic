@@ -1,7 +1,7 @@
  <ion-list *ngIf="recentlyAdded">
      <ion-item *ngFor="let ra of recentlyAdded">
             <i item-start [ngClass]="iconMapper.mapper[ra.expenseSubCategoryId]?iconMapper.mapper[ra.expenseSubCategoryId] :'fa fa-list'" class="fa-2x"></i>
-            <h2>You spent \${{ra.amount|number}} for {{ra.categoryDescription}}</h2>  
+            <h2>You spent ${{ra.amount|number}} for {{ra.categoryDescription}}</h2>  
             <p>{{ra.expenseDtUtc | amTimeAgo}} </p>     
      </ion-item>
  </ion-list>
