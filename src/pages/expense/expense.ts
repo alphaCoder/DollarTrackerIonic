@@ -20,11 +20,11 @@ export class ExpensePage {
   openModal() {
     var self = this;
     let modal = this.modalCtrl.create(ExpenseModalPage, {expenseStory:this.expenseStory, expense:this.expense});
-    modal.present();
-    modal.onDidDismiss(function(response) {
+    modal.onDidDismiss(response => {
       if(response && response.success) {
         self.notify.emit(<Expense>response.data);
       }
-    })
+    });
+    modal.present();
   }
 }

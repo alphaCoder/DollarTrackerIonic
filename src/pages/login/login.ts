@@ -13,8 +13,8 @@ import {ForgotPasswordPage} from '../forgotPassword/forgotPassword';
     selector: 'page-login'
 })
 export class LoginPage {
-    public email: string = null;
-    public password: string = null;
+    public email: string = "";
+    public password: string = "";
     public EMAIL_REGEXP = /^[a-z0-9!#$%&'*+\/=?^_`{|}~.-]+@[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/i;
     public invalidEmailAlert;
     public invalidPasswordAlert;

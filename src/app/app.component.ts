@@ -6,6 +6,7 @@ import {LoginPage} from  '../pages/login/login';
 import { TabsPage } from '../pages/tabs/tabs';
 import {TouchIdService} from '../shared/touch-id/touch-id.service';
 import { UserService } from '../user/user.service';
+import { SplashScreen } from '@ionic-native/splash-screen';
 
 @Component({
   template: `<ion-nav [root]="rootPage" swipeBackEnabled="false"></ion-nav>`
@@ -15,7 +16,11 @@ export class DollarTrackerApp {
   @ViewChild(Nav) nav: Nav;
   public rootPage: any;
 
-  constructor(private platform: Platform, statusBar: StatusBar, private touchId: TouchID, private alert: AlertController, private touchIdService: TouchIdService, private user:UserService) {
+  constructor(private platform: Platform, statusBar: StatusBar, 
+    private touchId: TouchID, 
+    private alert: AlertController, 
+    private touchIdService: TouchIdService, 
+    private user:UserService, splashScreen: SplashScreen) {
     this.rootPage = LoginPage;
 
     this.user.init();
@@ -28,8 +33,12 @@ export class DollarTrackerApp {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
+      statusBar.styleDefault();
+      splashScreen.hide();
       statusBar.overlaysWebView(false);
-      statusBar.isVisible = false;
+      statusBar.backgroundColorByHexString('#2185d0');
+     // statusBar.isVisible = false;
+    
       touchId.isAvailable().
         then(x => {
           this.touchIdService.init(this.nav);

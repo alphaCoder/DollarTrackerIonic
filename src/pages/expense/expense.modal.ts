@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { NavController, LoadingController, ModalController, Platform, NavParams, ViewController, AlertController } from 'ionic-angular';
 import { Expense } from './expense.model';
-import { Camera } from '@ionic-native/camera';
+import { Camera, CameraOptions } from '@ionic-native/camera';
 import { ExpenseService } from './expense.service';
 import { ExpenseStory } from '../expenseStory/expenseStory.model';
 import { Plugins } from '../../shared/upload/plugins.service';
@@ -20,6 +20,7 @@ export class ExpenseModalPage {
     public loading: any;
     public base64Image: string = null;
     private isEdit = false;
+    
     constructor(
         public platform: Platform,
         public params: NavParams,
@@ -29,7 +30,8 @@ export class ExpenseModalPage {
         public plugins: Plugins,
         public navCtrl: NavController,
         public loadingCtrl: LoadingController,
-        public actionSheetCtrl: ActionSheetController
+        public actionSheetCtrl: ActionSheetController,
+        private camera: Camera
     ) {
         let dt = new Date();
         this.expenseStory = params.data.expenseStory;
@@ -46,7 +48,6 @@ export class ExpenseModalPage {
     }
     public save() {
         if (!this.validate()) return;
-        var fn;
         if (this.images.length > 0) {
             var fileName = 'receipt-' + new Date().getTime() + '.jpg';
             this.loading.present();
@@ -54,27 +55,43 @@ export class ExpenseModalPage {
             var file = new File(this._imageBlob, fileName);
             var files: Array<any> = [file];
             if (this.isEdit) {
-                fn = this.expenseService.updateExpense(this.expense, this.images);
+                this.expenseService
+                    .updateExpense(this.expense, this.images)
+                    .subscribe(response => {
+                        this.dismiss(response);
+                    }, error =>{
+                        this.dismiss(null);
+                    });
             }
             else {
-                fn = this.expenseService
-                    .addExpense(this.expense, this.images);
+                this.expenseService
+                    .addExpense(this.expense, this.images)
+                    .subscribe(response => {
+                        this.dismiss(response);
+                    }, error =>{
+                        this.dismiss(null);
+                    });
             }
         }
         else {
             if (this.isEdit) {
-                fn = this.expenseService.updateOnlyExpense(this.expense);
+                this.expenseService
+                .updateOnlyExpense(this.expense)
+                .subscribe(response => {
+                    this.dismiss(response);
+                }, error =>{
+                    this.dismiss(null);
+                });
             }
             else {
-                fn = this.expenseService.addOnlyExpense(this.expense);
+                 this.expenseService
+                 .addOnlyExpense(this.expense)
+                 .subscribe(response => {
+                     this.dismiss(response);
+                 }, error =>{
+                     this.dismiss(null);
+                 });
             }
-        }
-        if (fn) {
-            fn.subscribe((response) => {
-                this.dismiss(response);
-            }, error => {
-                this.dismiss(null);
-            }, () => { this.dismiss(null); }); //TODO: display proper error message in case of failure
         }
     }
 
@@ -106,20 +123,37 @@ export class ExpenseModalPage {
     }
 
     public uploadReceipt() {
-
+        const options: CameraOptions = {
+            quality: 50,
+            destinationType: this.camera.DestinationType.FILE_URI,
+            encodingType: this.camera.EncodingType.PNG,
+            mediaType: this.camera.MediaType.PICTURE,
+            targetWidth: 400,
+            targetHeight: 300,
+          }
         let actionSheet = this.actionSheetCtrl.create({
             title: 'Upload receipt',
             buttons: [
                 {
                     text: 'Take Photo',
                     handler: () => {
-                        this.plugins.camera.open()
-                            .then(imgUrl => {
-                                if (imgUrl) {
-                                    this.images.push(imgUrl);
-                                    this.base64Image = imgUrl;
-                                }
-                            }, error => { console.log("image upload error", error) })
+                        this.camera.getPicture(options).then((imageData) => {
+                            // imageData is either a base64 encoded string or a file URI
+                            // If it's base64:
+                            this.images.push(imageData);
+                            this.base64Image =  imageData;
+                           }, (err) => {
+                            // Handle error
+                           });
+                       
+                       
+                        // this.plugins.camera.open()
+                        //     .then(imgUrl => {
+                        //         if (imgUrl) {
+                        //             this.images.push(imgUrl);
+                        //             this.base64Image = imgUrl;
+                        //         }
+                        //     }, error => { console.log("image upload error", error) })
                     }
                 },
                 {

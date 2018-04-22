@@ -26,17 +26,16 @@ export class Plugins {
     }
     
     camera = {       
-        open () : Promise<any>  {
+        open() : Promise<any>  {
             let options = {
-                destinationType: 1,
-                sourceType: 1,
-                encodingType: 0,
-                quality:50,
+                destinationType: this._camera.DestinationType.DATA_URL,
+                encodingType: this._camera.EncodingType.JPEG,
+                quality:100,
                 allowEdit: false,
                 saveToPhotoAlbum: false,            
                 correctOrientation: true,
             };        
-            return Camera.getPlugin().getPicture(options).then((imgUrl) => {
+            return this._camera.getPicture(options).then((imgUrl) => {
                 console.log("In camera get picture",imgUrl);
                 return imgUrl;
             }, (err) => {                
